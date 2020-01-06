@@ -4,7 +4,6 @@
 
 # Configuration
 Add the following to `settings.py`.
-
 ```
 AUTHENTICATION_BACKENDS = [
     'netbox_rbac.backend.Backend',
@@ -64,9 +63,7 @@ RBAC = {
 }
 ```
 
-# URLs
 Add the following to `urls.py`.
-
 ```
 _patterns += [
 	path('', include('netbox_rbac.urls') ),
