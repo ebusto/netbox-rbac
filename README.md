@@ -1,5 +1,7 @@
 # Introduction
-This package is an opinionated implementation of role based access control for NetBox. It completely replaces the default authentication backend, using Active Directory for authentication and determining group membership.
+This package is an opinionated implementation of role based access control for NetBox.
+
+It completely replaces the default authentication backend, using Active Directory for authentication and determining group membership. A user's roles are updated only on login, and are stored in the database.
 
 # Installation
 Clone this repository.
