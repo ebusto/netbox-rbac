@@ -1,0 +1,64 @@
+{% extends '_base.html' %}
+
+{% load helpers %}
+{% load render  %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <strong>Roles</strong>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-condensed table-hover panel-body">
+          <tr>
+            <th></th>
+            <th> Name        </th>
+            <th> Groups      </th>
+            <th> Permissions </th>
+            <th> Rule        </th>
+          </tr>
+          {% for role in rule.roles.values|dictsort:"name" %}
+            <tr>
+              <td>
+                {% if role.name in user.profile.roles %}
+                  <span class="fa fa-check text-success"></span>
+                {% else %}
+                  <span class="fa fa-ban text-danger"></span>
+                {% endif %}
+              </td>
+              <td> {{ role.name  }} </td>
+              <td>
+                {% for name in role.groups %}
+                  {{ name }}<br>
+                {% empty  %}
+                  <span class="text-muted">None</span>
+                {% endfor %}
+              </td>
+              <td>
+                {% for name in role.perms %}
+                  {{ name }}<br>
+                {% empty  %}
+                  <span class="text-muted">None</span>
+                {% endfor %}
+              </td>
+              <td>
+                {% if role.rule %}
+                  {{ role.rule.strip|render_python|safe }}
+                {% else  %}
+                  <span class="text-muted">None</span>
+                {% endif %}
+
+                {% if role.context %}
+                  {{ role.context|render_yaml|safe }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

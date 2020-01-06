@@ -1,0 +1,26 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<div class="row" style="margin-top: 150px;">
+  <div class="col-sm-4 col-sm-offset-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <strong><i class="glyphicon glyphicon-warning-sign"></i> Permission Denied </strong>
+      </div>
+      <div class="panel-body">
+        {% if exception %}
+          You do not have permission to {{ exception }}.
+        {% else %}
+          You do not have permission to perform that operation.
+        {% endif %}
+      </div>
+      <div class="panel-footer text-right">
+        {% if request.GET.return_url %}
+          <a href="{{ request.GET.return_url }}" class="btn btn-xs btn-default">Back</a>
+        {% endif %}
+        <a href="{% url 'home' %}" class="btn btn-xs btn-primary">Home Page</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
