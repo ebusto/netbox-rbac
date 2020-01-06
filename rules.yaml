@@ -1,0 +1,124 @@
+##############
+# USER FLAGS #
+##############
+
+# Refer to the Django User model documentation:
+#   https://docs.djangoproject.com/en/2.2/ref/contrib/auth/#user-model
+
+_is_active:
+  groups:
+    - Access-NetBox-Active
+  perms:
+    - extras.*_customfieldvalue
+    - extras.*_objectchange
+    - taggit.*
+    - users.*_token
+    - '*.view_*'
+
+_is_denied:
+  groups:
+    - Access-NetBox-Deny
+
+_is_staff:
+  groups:
+    - Access-NetBox-Admin
+
+_is_super:
+  groups:
+    - Access-NetBox-Admin
+
+################
+# ADMIN GROUPS #
+################
+
+# Grants full access to circuits and IPAM.
+admin_network:
+  groups:
+    - Access-NetBox-Admin-Network
+  perms:
+    - circuits.*
+    - ipam.*
+
+# Grants full access to DCIM.
+admin_dcim:
+  groups:
+    - Access-NetBox-Admin-DCIM
+  perms:
+    - dcim.*
+
+# Grants the ability to manage device models.
+admin_dcim_model:
+  groups:
+    - Access-NetBox-Admin-DCIM-Model
+  perms:
+    - dcim.*_consoleporttemplate
+    - dcim.*_consoleserverporttemplate
+    - dcim.*_devicebaytemplate
+    - dcim.*_devicetype
+    - dcim.*_frontporttemplate
+    - dcim.*_interfacetemplate
+    - dcim.*_manufacturer
+    - dcim.*_poweroutlettemplate
+    - dcim.*_powerporttemplate
+    - dcim.*_rearporttemplate
+
+#############
+# TEMPLATES #
+#############
+
+# Grants access to devices and virtual machines by tenant.
+.system_tenant:
+  perms:
+    - dcim.*_consoleport
+    - dcim.*_consoleserverport
+    - dcim.*_device
+    - dcim.*_devicebay
+    - dcim.*_frontport
+    - dcim.*_interface
+    - dcim.*_inventoryitem
+    - dcim.*_poweroutlet
+    - dcim.*_powerport
+    - dcim.*_rearport
+    - dcim.*_virtualchassis
+    - virtualization.*_virtualmachine
+  context:
+    attributes:
+      - device.tenant.name
+      - master.tenant.name
+      - tenant.name
+      - virtual_machine.tenant.name
+    tenants:
+      - Unassigned
+  rule: >
+    match_or_none(*attributes, tenants)
+
+#########
+# ROLES #
+#########
+
+system_tenant_appdev:
+  base:
+    - .system_tenant
+  context:
+    tenants:
+      - Application Development
+  groups:
+    - Access-AppDev-Team
+
+system_tenant_automation:
+  base:
+    - .system_tenant
+  context:
+    tenants:
+      - Automation Services
+  groups:
+    - Access-Automation-Team
+
+system_tenant_database:
+  base:
+    - .system_tenant
+  context:
+    tenants:
+      - Database Support
+  groups:
+    - Access-Database-Team
