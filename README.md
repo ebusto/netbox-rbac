@@ -3,6 +3,8 @@ This package is an opinionated implementation of role based access control for N
 
 It completely replaces the default authentication backend, using Active Directory for authentication and determining group membership. A user's roles are updated only on login, and are stored in the database.
 
+Once installed, a user may [view their roles](https://netbox/roles/).
+
 # Installation
 Clone this repository.
 
