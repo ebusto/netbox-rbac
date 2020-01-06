@@ -1,0 +1,5 @@
+cachetools==4.0.0
+deepmerge==0.1.0
+pygments==2.5.2
+python-ldap==3.2.0
+wcmatch==5.1
