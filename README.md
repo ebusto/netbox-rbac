@@ -101,4 +101,4 @@ $ ./manage.py migrate
 ```
 
 # Rules
-See the [example](rules.yaml) rules, and [documentation](RULES.md).
+See the [example](rules.yaml) rules, and [documentation](RULES.md). The rule paths can be local files or URLs, and the backend will try each path in turn until it succeeds.
