@@ -1,6 +1,21 @@
 # Introduction
+This package is an opinionated implementation of role based access control for NetBox.
 
 # Installation
+Clone this repository.
+```
+$ git clone https://github.com/ebusto/netbox-rbac /opt/netbox-rbac
+```
+
+Install the dependencies.
+```
+$ pip3 install --upgrade -r /opt/netbox-rbac/requirements.txt
+```
+
+Enable the Django "application".
+```
+$ ln -sf /opt/netbox-rbac/netbox_rbac /opt/netbox/netbox/netbox_rbac
+```
 
 # Configuration
 Add the following to `settings.py`.
