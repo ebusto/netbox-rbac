@@ -84,3 +84,12 @@ _patterns += [
 	path('', include('netbox_rbac.urls') ),
 ]
 ```
+
+# Database
+Generate and apply RBAC model migrations.
+
+```
+$ ./manage.py makemigrations netbox_rbac
+$ ./manage.py showmigrations
+$ ./manage.py migrate
+```
