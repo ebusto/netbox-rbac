@@ -1,4 +1,5 @@
 import deepmerge
+import importlib
 import logging
 import yaml
 
@@ -76,6 +77,7 @@ class Role:
 		self.name    = name
 		self.context = kwargs.get('context', {})
 		self.groups  = kwargs.get('groups',  [])
+		self.imports = kwargs.get('imports', [])
 		self.perms   = kwargs.get('perms',   [])
 		self.rule    = kwargs.get('rule')
 
@@ -89,6 +91,9 @@ class Role:
 	def eval(self, obj):
 		if self.code and obj:
 			context = {**self.context, 'obj': obj}
+
+			for name in self.imports:
+				context[name] = importlib.import_module(name)
 
 			for name, fn in functions:
 				context[name] = curry(fn, obj)

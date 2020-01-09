@@ -7,6 +7,8 @@ Rules are described in a YAML configuration file. A user's roles are determined 
     - <role>
   context:
     <variable>: <value>
+  imports:
+    - <module>
   groups:
     - <group>
   perms:
@@ -30,7 +32,7 @@ A few special roles are defined.
 # Rule
 A role may define a Python statement to be evaluated against the object, called a *rule*.
 
-The execution environment is minimal, containing only the object being evaluated as `obj`, the variables defined in `context`, and a small number of macros.
+The execution environment is minimal, containing only the object being evaluated as `obj`, the variables defined in `context`, and a small number of macros. Modules specified in `imports` will be imported prior to rule evaluation.
 
 # Macros
 *Macros* simplify writing rules, which typically follow a small number of patterns.

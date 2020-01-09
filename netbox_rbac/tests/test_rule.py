@@ -23,6 +23,13 @@ config = {
 	'dcim_site_admin_all': {
 		'groups': ['DCIM-Site-Admins'],
 		'perms':  ['dcim.*_site'],
+	},
+
+	'import_test': {
+		'groups':  ['DCIM-Site-Admins'],
+		'imports': ['os', 'os.path'],
+		'perms':   ['test.*_import'],
+		'rule':    'os.path.basename("/foo/bar") == "bar"',
 	}
 }
 
@@ -53,6 +60,9 @@ class TestRule:
 			( 'dcim.add_rack',    False, Rack(name='R1', site=Site(name='DC2')) ),
 			( 'dcim.change_rack', True,  Rack(name='R1', site=Site(name='DC2')) ),
 			( 'dcim.delete_rack', False, Rack(name='R1', site=Site(name='DC2')) ),
+
+			# Module import test.
+			( 'test.test_import', True, Site(name='DC1')                        ),
 		]
 
 		for perm, result, obj in tests:
