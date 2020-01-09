@@ -26,6 +26,8 @@ config = None
 def load(paths):
 	global config
 
+	errors = []
+
 	for path in paths:
 		try:
 			path = parse.urlparse(path, scheme='file')
@@ -36,9 +38,9 @@ def load(paths):
 			return config
 
 		except Exception as err:
-			log.warn('load: %s: %s', path.geturl(), err)
+			errors.append('%s: %s' % (path.geturl(), err))
 	
-	log.warn('load: no valid rules found')
+	log.warn('load: no valid rules found: %s', errors)
 
 	# Unable to load a new config, so return the current one.
 	return config
