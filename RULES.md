@@ -32,7 +32,15 @@ A few special roles are defined.
 # Rule
 A role may define a Python statement to be evaluated against the object, called a *rule*.
 
-The execution environment is minimal, containing only the object being evaluated as `obj`, the variables defined in `context`, and a small number of macros. Modules specified in `imports` will be imported prior to rule evaluation.
+In addition to *[macros](#Macros)*, and any variables specified in the `context`, a rule has the following symbols in its evaluation environment.
+
+Modules specified in `imports` will also be imported prior to evaluation.
+
+| Name    | Description                 |
+| ------- | --------------------------- |
+| fnmatch | The fnmatch function.       |
+| obj     | The object being evaluated. |
+| request | The Django request object.  |
 
 # Macros
 *Macros* simplify writing rules, which typically follow a small number of patterns.
