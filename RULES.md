@@ -6,7 +6,7 @@ Rules are described in a YAML configuration file. A user's roles are determined 
   base:
     - <role>
   context:
-    <variable>: <value>
+    <name>: <value>
   imports:
     - <module>
   groups:
