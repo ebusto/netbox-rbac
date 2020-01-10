@@ -1,8 +1,8 @@
-from django.contrib.auth    import mixins
-from django.core.exceptions import PermissionDenied
-
 import collections
 import re
+
+from django.contrib.auth    import mixins
+from django.core.exceptions import PermissionDenied
 
 class PermissionRequiredMixin(mixins.PermissionRequiredMixin):
 	def get_permission_objects(self):
@@ -26,21 +26,23 @@ class PermissionRequiredMixin(mixins.PermissionRequiredMixin):
 
 		for obj in objects:
 			for perm in permissions:
-				if not self.request.user.has_perms([perm], obj):
-					# Extract the operation from the permission:
-					#   <app>.<operation>_<class>
-					match = re.match('^\w+\.([^_]+)', perm)
+				if self.request.user.has_perms([perm], obj):
+					continue
 
-					# If the object is uninitialized, display something useful.
-					if not str(obj):
-						obj = obj._meta.verbose_name_plural
+				# Extract the operation from the permission:
+				#   <app>.<operation>_<class>
+				match = re.match('^\w+\.([^_]+)', perm)
 
-					denied[match.group(1)].append(str(obj))
+				# If the object is uninitialized, display something useful.
+				if not str(obj):
+					obj = obj._meta.verbose_name_plural
+
+				denied[match.group(1)].append(str(obj))
+
+		if not denied:
+			return True
 
 		# Display a more informative exception.
-		if denied:
-			raise PermissionDenied(', '.join(
-				['%s %s' % (op, ', '.join(obj)) for op, obj in denied.items()]
-			))
-
-		return True
+		raise PermissionDenied(', '.join(
+			['%s %s' % (op, ', '.join(obj)) for op, obj in denied.items()]
+		))
