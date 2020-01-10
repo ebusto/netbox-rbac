@@ -1,20 +1,17 @@
-from django.conf                import settings
-from django.contrib.auth.models import User
+import cachetools
+import django.conf
+
 from django.core.exceptions     import PermissionDenied
+from django.contrib.auth.models import User
 
 from . import auth, models, rule
-
-import cachetools
-import logging
-
-log = logging.getLogger('netbox_rbac')
 
 # Django creates an instance of Backend for every permission check. Since
 # loading rules is somewhat expensive, we memoize the configuration items, as
 # well as flush periodically to ensure we're using the latest rules.
 @cachetools.cached(cache=cachetools.TTLCache(maxsize=128, ttl=60))
 def cached_config(key):
-	config = settings.RBAC
+	config = django.conf.settings.RBAC
 
 	if key == 'auth':
 		return auth.load(config['AUTH'])
@@ -46,9 +43,6 @@ class Backend:
 		for name, role in self.rule.roles.items():
 			if sn.member(username, role.groups):
 				roles.add(name)
-
-		self.log('authenticate: username = %s, roles = %s' % \
-			(username, sorted(roles)))
 
 		user.email      = account.email
 		user.first_name = account.first_name
@@ -83,12 +77,4 @@ class Backend:
 		return user
 
 	def has_perm(self, user_obj, perm, obj=None):
-		result = self.rule.has_perm(user_obj.profile.roles, perm, obj)
-
-		self.log('has_perm: user %s, perm %s, object %s: %s' % \
-			(user_obj, perm, obj.__dict__ if obj else None, result))
-
-		return result
-
-	def log(self, message):
-		log.debug('backend: ' + message)
+		return self.rule.has_perm(user_obj.profile.roles, perm, obj)
