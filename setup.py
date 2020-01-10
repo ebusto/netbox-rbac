@@ -8,7 +8,7 @@ with open('requirements.txt', 'r') as fh:
 
 setuptools.setup(
 	name='netbox-rbac',
-	version='1.0.0',
+	version='1.0.1',
 	author='Eric Busto',
 	author_email='ebusto@nvidia.com',
 	description='Opinionated RBAC for NetBox',
