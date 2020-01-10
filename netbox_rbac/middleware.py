@@ -1,3 +1,5 @@
+import threading
+
 from django.core.exceptions   import PermissionDenied
 from django.db.models.signals import m2m_changed, pre_save
 from django.utils.functional  import curry
@@ -9,6 +11,12 @@ ignore_modules = [
 	'netbox_rbac.models',
 ]
 
+# Track the current request so rules can evaluate request attributes.
+requests = {}
+
+def request():
+	return requests.get(threading.current_thread())
+
 class Middleware:
 	def __init__(self, get_response):
 		self.get_response = get_response
@@ -17,6 +25,8 @@ class Middleware:
 		handler = curry(self.has_perm, request)
 		signals = (m2m_changed, pre_save)
 
+		requests[threading.current_thread()] = request
+
 		for signal in signals:
 			signal.connect(handler)
 
@@ -24,6 +34,8 @@ class Middleware:
 
 		for signal in signals:
 			signal.disconnect(handler)
+
+		del requests[threading.current_thread()]
 
 		return response
 

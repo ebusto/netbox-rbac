@@ -9,7 +9,7 @@ from inspect import getmembers, isfunction
 from urllib  import parse, request
 from wcmatch import fnmatch
 
-from . import macros
+from . import macros, middleware
 
 log = logging.getLogger('netbox_rbac')
 
@@ -99,6 +99,11 @@ class Role:
 
 			for name, fn in functions:
 				context[name] = curry(fn, obj)
+
+			context.update({
+				'fnmatch': fnmatch.fnmatch,
+				'request': middleware.request(),
+			})
 
 			return eval(self.code, context)
 
