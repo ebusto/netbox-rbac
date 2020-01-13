@@ -8,7 +8,7 @@ with open('requirements.txt', 'r') as fh:
 
 setuptools.setup(
 	name='netbox-rbac',
-	version='1.0.1',
+	version='1.0.2',
 	author='Eric Busto',
 	author_email='ebusto@nvidia.com',
 	description='Opinionated RBAC for NetBox',
@@ -17,6 +17,7 @@ setuptools.setup(
 	url='https://github.com/ebusto/netbox-rbac',
 	packages=setuptools.find_packages(),
 	install_requires=packages,
+	zip_safe=False,
 	classifiers=[
 		'Environment :: Web Environment',
 		'Framework :: Django',

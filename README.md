@@ -6,22 +6,8 @@ It completely replaces the default authentication backend, using Active Director
 Once installed, a user may [view their roles](https://netbox/roles/).
 
 # Installation
-Clone this repository.
-
 ```
-$ git clone https://github.com/ebusto/netbox-rbac /opt/netbox-rbac
-```
-
-Install the dependencies.
-
-```
-$ pip3 install --upgrade -r /opt/netbox-rbac/requirements.txt
-```
-
-Enable the Django "application".
-
-```
-$ ln -sf /opt/netbox-rbac/netbox_rbac /opt/netbox/netbox/netbox_rbac
+$ pip3 install netbox-rbac
 ```
 
 # Configuration
@@ -32,13 +18,6 @@ AUTHENTICATION_BACKENDS = [
     'netbox_rbac.backend.Backend',
 ]
 
-REST_FRAMEWORK.update({
-	'DEFAULT_PERMISSION_CLASSES': (
-		'netbox_rbac.api.TokenPermissions',
-		'netbox.api.TokenPermissions',
-	)
-})
-
 INSTALLED_APPS += (
 	'netbox_rbac',
 )
@@ -47,7 +26,12 @@ MIDDLEWARE += (
 	'netbox_rbac.middleware.Middleware',
 )
 
-TEMPLATES[0]['DIRS'].insert(0, os.path.join(BASE_DIR, 'netbox_rbac', 'templates'))
+REST_FRAMEWORK.update({
+	'DEFAULT_PERMISSION_CLASSES': (
+		'netbox_rbac.api.TokenPermissions',
+		'netbox.api.TokenPermissions',
+	)
+})
 
 LOGGING.update({
 	'loggers': {
