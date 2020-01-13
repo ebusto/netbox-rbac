@@ -18,6 +18,7 @@
             <th> Groups      </th>
             <th> Permissions </th>
             <th> Rule        </th>
+            <th> Context     </th>
           </tr>
           {% for role in rule.roles.values|dictsort:"name" %}
             <tr>
@@ -45,13 +46,16 @@
               </td>
               <td>
                 {% if role.rule %}
-                  {{ role.rule.strip|render_python|safe }}
+                  {{ role.rule }}
                 {% else  %}
                   <span class="text-muted">None</span>
                 {% endif %}
-
+              </td>
+              <td>
                 {% if role.context %}
-                  {{ role.context|render_yaml|safe }}
+                  {{ role.context }}
+                {% else  %}
+                  <span class="text-muted">None</span>
                 {% endif %}
               </td>
             </tr>

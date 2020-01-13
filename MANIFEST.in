@@ -1,0 +1,2 @@
+recursive-include netbox_rbac *.html
+recursive-include netbox_rbac *.py

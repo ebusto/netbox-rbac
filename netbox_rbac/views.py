@@ -11,4 +11,4 @@ class Roles(View):
 			'user': request.user,
 		}
 
-		return render(request, 'rbac/roles.html', context)
+		return render(request, 'netbox_rbac/roles.html', context)
