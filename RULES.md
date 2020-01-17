@@ -195,6 +195,7 @@ All known permissions:
 + dcim.view_virtualchassis
 + extras.add_configcontext
 + extras.add_reportresult
++ extras.add_tag
 + extras.change_configcontext
 + extras.change_imageattachment
 + extras.change_tag
