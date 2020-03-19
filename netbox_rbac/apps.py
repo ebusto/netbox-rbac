@@ -2,7 +2,6 @@ import django.apps
 import django.conf
 import importlib
 import inspect
-import os
 
 # Core applications.
 apps = [
@@ -24,9 +23,6 @@ class AppConfig(django.apps.AppConfig):
 	name = 'netbox_rbac'
 
 	def ready(self):
-		if 'RUN_MAIN' not in os.environ:
-			return
-
 		from .mixins import PermissionRequiredMixin
 
 		# For each view in each app, replace PermissionRequiredMixin with ours.
