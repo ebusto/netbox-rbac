@@ -1,8 +1,8 @@
+import functools
 import threading
 
 from django.core.exceptions   import PermissionDenied
 from django.db.models.signals import m2m_changed, pre_save
-from django.utils.functional  import curry
 
 # Ignore changes related to authentication.
 ignore_modules = [
@@ -22,7 +22,7 @@ class Middleware:
 		self.get_response = get_response
 
 	def __call__(self, request):
-		handler = curry(self.has_perm, request)
+		handler = functools.partial(self.has_perm, request)
 		signals = (m2m_changed, pre_save)
 
 		requests[threading.current_thread()] = request
