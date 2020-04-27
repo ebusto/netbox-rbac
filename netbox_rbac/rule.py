@@ -1,9 +1,8 @@
 import deepmerge
+import functools
 import importlib
 import logging
 import yaml
-
-from django.utils.functional import curry
 
 from inspect import getmembers, isfunction
 from urllib  import parse, request
@@ -98,7 +97,7 @@ class Role:
 				context[name] = importlib.import_module(name)
 
 			for name, fn in functions:
-				context[name] = curry(fn, obj)
+				context[name] = functools.partial(fn, obj)
 
 			context.update({
 				'fnmatch': fnmatch.fnmatch,
