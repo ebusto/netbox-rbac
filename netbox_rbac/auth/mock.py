@@ -13,8 +13,8 @@ class Session:
 		self.groups = []
 
 	def authenticate(self, username, password):
-		user = map(lambda u: u['username'] == username and \
-		                     u['password'] == password, self.users)
+		user = filter(lambda u: u['username'] == username and \
+		                        u['password'] == password, self.users)
 
 		user = next(user, None)
 

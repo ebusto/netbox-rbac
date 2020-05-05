@@ -11,7 +11,15 @@ $ pip3 install netbox-rbac
 ```
 
 # Configuration
-Add the following to `settings.py`.
+Add the following to `urls.py`.
+
+```
+_patterns += [
+	path('', include('netbox_rbac.urls') ),
+]
+```
+
+Add the following to `settings.py`. Either the LDAP or MOCK driver can be used, but not both.
 
 ```
 AUTHENTICATION_BACKENDS = [
@@ -41,7 +49,9 @@ LOGGING.update({
 		},
 	},
 })
-
+```
+## LDAP
+```
 RBAC = {
 	'AUTH': {
 		'LDAP': {
@@ -70,11 +80,26 @@ RBAC = {
 }
 ```
 
-Add the following to `urls.py`.
+## Mock
 ```
-_patterns += [
-	path('', include('netbox_rbac.urls') ),
-]
+RBAC = {
+	'AUTH': {
+		'MOCK': {
+			'users': [{
+				'username': 'ebusto',
+				'password': 'pw12345',
+				'email':    'ebusto@nvidia.com',
+				'first_name': 'Eric',
+				'last_name':  'Busto',
+				'groups': ['Access-NetBox-Read', 'Access-NetBox-Admin-DCIM'],
+			}],
+		},
+	},
+	'RULE': [
+		'/opt/netbox-rules/rules.yaml',
+		'https://rules.company.com/rules.yaml',
+	],
+}
 ```
 
 # Database
