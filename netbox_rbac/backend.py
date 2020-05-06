@@ -77,4 +77,7 @@ class Backend:
 		return user
 
 	def has_perm(self, user_obj, perm, obj=None):
-		return self.rule.has_perm(user_obj.profile.roles, perm, obj)
+		if hasattr(user_obj, 'profile'):
+			return self.rule.has_perm(user_obj.profile.roles, perm, obj)
+
+		return False
