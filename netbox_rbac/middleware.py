@@ -9,6 +9,7 @@ ignore_modules = [
     "django.contrib.auth.models",
     "django.contrib.sessions.models",
     "netbox_rbac.models",
+    "users.models",
 ]
 
 # Track the current request so rules can evaluate request attributes.
