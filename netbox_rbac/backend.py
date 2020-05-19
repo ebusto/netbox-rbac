@@ -1,3 +1,4 @@
+import logging
 import cachetools
 import django.conf
 
@@ -5,6 +6,8 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
 
 from . import auth, models, rule
+
+log = logging.getLogger('netbox_rbac')
 
 # Django creates an instance of Backend for every permission check. Since
 # loading rules is somewhat expensive, we memoize the configuration items, as
