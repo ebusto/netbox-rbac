@@ -28,15 +28,22 @@ class Backend:
         self.rule = kwargs.get("rule", cached_config("rule"))
 
     def authenticate(self, request, username=None, password=None):
+        log.debug(f"Creating new session for {username}")
         sn = self.auth.session()
 
         try:
+            log.debug("Authenticating session")
             account = sn.authenticate(username, password)
         except:
             raise PermissionDenied
 
         # Credentials are valid. Ensure the user object exists.
-        user, _ = User.objects.get_or_create(username=username)
+        log.debug(f"Retrieving User for {username}")
+        try:
+            user, _ = User.objects.get_or_create(username=username)
+        except Exception as err:
+            log.exception(f"Failed to retrieve user: {username}")
+            raise err
 
         # Determine roles from group membership.
         roles = set()
@@ -48,6 +55,8 @@ class Backend:
         user.email = account.email
         user.first_name = account.first_name
         user.last_name = account.last_name
+
+        log.debug(f"Roles for {username}: {roles}")
 
         if "_is_denied" in roles:
             roles.clear()

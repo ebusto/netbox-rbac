@@ -1,3 +1,4 @@
+import logging
 import functools
 import threading
 
@@ -14,6 +15,11 @@ ignore_modules = [
 
 # Track the current request so rules can evaluate request attributes.
 requests = {}
+
+
+# Common logger
+# TODO(shakefu): Clean this up for actual common logging
+log = logging.getLogger('netbox_rbac')
 
 
 def request():
@@ -43,7 +49,10 @@ class Middleware:
         return response
 
     def has_perm(self, request, instance, **kwargs):
+        log.debug(f"Middleware.has_perm: {request} {instance} {kwargs}")
+
         if instance.__module__ in ignore_modules:
+            log.debug("Ignoring.")
             return
 
         # Determining the correct permission is surprisingly tricky.
@@ -67,5 +76,8 @@ class Middleware:
 
         perm = "%s.%s_%s" % (instance._meta.app_label, oper, instance._meta.model_name,)
 
+        log.debug(f"Checking {perm} for {request.user}")
+
         if not request.user.has_perms([perm], instance):
+            log.debug("Permission was not found.")
             raise PermissionDenied("%s %s" % (oper, instance))
