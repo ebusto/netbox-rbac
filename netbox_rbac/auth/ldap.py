@@ -65,12 +65,19 @@ class Session:
         log.debug(f"Authenticating as '{who}' with '{password}'")
 
         # self.client.simple_bind_s(self.domain + "\\" + username, password)
-        self.client.simple_bind_s(who, password)
+        try:
+            self.client.simple_bind_s(who, password)
+        except Exception as err:
+            log.exception("Simple bind failed.")
+            raise err
 
         # Retrieve user attributes.
-        result = self.lookup("user", username)
-
-        log.debug(f"Lookup result: {result}")
+        try:
+            result = self.lookup("user", username)
+            log.debug(f"Lookup result: {result}")
+        except Exception as err:
+            log.exception("Lookup failed.")
+            raise err
 
         if not result:
             raise Exception("search: no results")

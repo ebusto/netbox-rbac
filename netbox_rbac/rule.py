@@ -64,7 +64,7 @@ class Rule:
     # Given the user's roles, the requested permission, and the object, returns
     # whether or not the operation is allowed.
     def has_perm(self, roles, perm, obj):
-        log.debug("Rule.has_perm: {roles} {perm} {obj}")
+        log.debug(f"Rule.has_perm: {roles} {perm} {obj}")
         for role in roles:
             role = self.roles.get(role)
 
@@ -114,5 +114,5 @@ class Role:
 
     # Returns whether or not this role provides the requested permission.
     def has_perm(self, perm):
-        log.debug("Role.has_perm: {perm}")
+        log.debug(f"Role.has_perm: {perm}")
         return fnmatch.fnmatch(perm, self.perms)
