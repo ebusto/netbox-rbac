@@ -10,6 +10,11 @@ from wcmatch import fnmatch
 
 from . import macros, middleware
 
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
 log = logging.getLogger("netbox_rbac")
 
 # Collect all public functions from macros.
@@ -34,7 +39,7 @@ def load(paths):
             path = parse.urlparse(path, scheme="file")
             data = request.urlopen(path.geturl())
 
-            config = Rule(yaml.safe_load(data))
+            config = Rule(yaml.load(data, Loader=Loader))
 
             return config
 
