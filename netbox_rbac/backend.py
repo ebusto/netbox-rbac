@@ -79,10 +79,6 @@ class Backend:
         return user
 
     def has_perm(self, user_obj, perm, obj=None):
-        import logging
-        log = logging.getLogger('django')
-        log.warn('backend has_perm: user = %s, perm = %s, obj = %s' % (user_obj, perm, obj))
-
         if hasattr(user_obj, "profile"):
             return self.rule.has_perm(user_obj.profile.roles, perm, obj)
 
