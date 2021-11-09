@@ -1,8 +1,9 @@
 import functools
 import threading
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions   import PermissionDenied
 from django.db.models.signals import m2m_changed, pre_save
+
 
 # Ignore changes related to authentication.
 ignore_modules = [
@@ -56,16 +57,15 @@ class Middleware:
         # primary key in order to distinguish between 'add' and 'change'.
         method_operation = {
             "DELETE": "delete",
-            "GET": "view",
-            "HEAD": "view",
-            "PATCH": "change",
-            "POST": "add",
-            "PUT": "change",
+            "GET":    "view",
+            "HEAD":   "view",
+            "PATCH":  "change",
+            "POST":   "add",
+            "PUT":    "change",
         }
 
         oper = "change" if instance.pk else method_operation[request.method]
-
         perm = "%s.%s_%s" % (instance._meta.app_label, oper, instance._meta.model_name,)
 
-        if not request.user.has_perms([perm], instance):
+        if not request.user.has_perm(perm, instance):
             raise PermissionDenied("%s %s" % (oper, instance))

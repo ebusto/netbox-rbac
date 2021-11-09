@@ -1,49 +1,60 @@
-import collections
-import re
-
-from django.contrib.auth import mixins
 from django.core.exceptions import PermissionDenied
+from netbox.views           import generic
+from utilities.permissions  import resolve_permission
 
 
-class PermissionRequiredMixin(mixins.PermissionRequiredMixin):
-    def get_permission_objects(self):
-        # Single object view.
-        if hasattr(self, "get_object") and callable(self.get_object):
-            return [self.get_object(self.kwargs)]
+#
+# Bulk view mixins.
+#
+class BulkCheckView:
+    def post(self, request, *args, **kwargs):
+        perm = self.get_required_permission()
 
-        # Multiple objects view.
-        pks = [int(pk) for pk in self.request.POST.getlist("pk")]
+        if request.POST.get('_all'):
+            qs = self.queryset.all()
 
-        if pks and hasattr(self, "queryset"):
-            return self.queryset.model.objects.filter(pk__in=pks).iterator()
+            if self.filterset:
+                qs = self.filterset(request.GET, qs).qs
 
-        return [None]
+        else:
+            qs = self.queryset.filter(pk__in=request.POST.getlist('pk'))
 
-    def has_permission(self):
-        objects = self.get_permission_objects()
-        permissions = self.get_permission_required()
+        for obj in qs.iterator():
+            if not request.user.has_perm(perm, obj):
+                raise PermissionDenied('%s %s' % (resolve_permission(perm)[1], obj))
 
-        denied = collections.defaultdict(list)
+        return super().post(request, *args, **kwargs)
 
-        for obj in objects:
-            for perm in permissions:
-                if self.request.user.has_perms([perm], obj):
-                    continue
 
-                # Extract the operation from the permission:
-                #   <app>.<operation>_<class>
-                match = re.match("^\w+\.([^_]+)", perm)
+class BulkDeleteView(BulkCheckView, generic.BulkDeleteView):
+    pass
 
-                # If the object is uninitialized, display something useful.
-                if not str(obj):
-                    obj = obj._meta.verbose_name_plural
 
-                denied[match.group(1)].append(str(obj))
+class BulkEditView(BulkCheckView, generic.BulkEditView):
+    pass
 
-        if not denied:
-            return True
 
-        # Display a more informative exception.
-        raise PermissionDenied(
-            ", ".join(["%s %s" % (op, ", ".join(obj)) for op, obj in denied.items()])
-        )
+class BulkRenameView(BulkCheckView, generic.BulkRenameView):
+    pass
+
+
+#
+# Object view mixins.
+#
+class ObjectCheckView:
+    def get(self, request, *args, **kwargs):
+        obj  = self.get_object(kwargs)
+        perm = self.get_required_permission()
+
+        if not request.user.has_perm(perm, obj):
+            raise PermissionDenied('%s %s' % (resolve_permission(perm)[1], obj))
+
+        return super().get(request, *args, **kwargs)
+
+
+class ObjectDeleteView(ObjectCheckView, generic.ObjectDeleteView):
+    pass
+
+
+class ObjectEditView(ObjectCheckView, generic.ObjectEditView):
+    pass

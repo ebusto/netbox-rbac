@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 from . import auth, models, rule
 
+
 # Django creates an instance of Backend for every permission check. Since
 # loading rules is somewhat expensive, we memoize the configuration items, as
 # well as flush periodically to ensure we're using the latest rules.
@@ -32,7 +33,7 @@ class Backend:
 
         try:
             account = sn.authenticate(username, password)
-        except:
+        except Exception:
             raise PermissionDenied
 
         # Credentials are valid. Ensure the user object exists.
@@ -45,16 +46,16 @@ class Backend:
             if sn.member(username, role.groups):
                 roles.add(name)
 
-        user.email = account.email
+        user.email      = account.email
         user.first_name = account.first_name
-        user.last_name = account.last_name
+        user.last_name  = account.last_name
 
         if "_is_denied" in roles:
             roles.clear()
 
-        user.is_active = "_is_active" in roles
-        user.is_staff = "_is_staff" in roles
-        user.is_superuser = "_is_super" in roles
+        user.is_active    = "_is_active" in roles
+        user.is_staff     = "_is_staff"  in roles
+        user.is_superuser = "_is_super"  in roles
 
         user.save()
 
@@ -78,6 +79,10 @@ class Backend:
         return user
 
     def has_perm(self, user_obj, perm, obj=None):
+        import logging
+        log = logging.getLogger('django')
+        log.warn('backend has_perm: user = %s, perm = %s, obj = %s' % (user_obj, perm, obj))
+
         if hasattr(user_obj, "profile"):
             return self.rule.has_perm(user_obj.profile.roles, perm, obj)
 

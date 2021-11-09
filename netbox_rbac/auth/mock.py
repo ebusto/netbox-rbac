@@ -11,7 +11,7 @@ class Driver:
 
 class Session:
     def __init__(self, users):
-        self.users = users
+        self.users  = users
         self.groups = []
 
     def authenticate(self, username, password):
@@ -28,9 +28,9 @@ class Session:
         self.groups = user["groups"]
 
         return auth.Account(
-            email=user["email"],
-            first_name=user["first_name"],
-            last_name=user["last_name"],
+            email      = user["email"],
+            first_name = user["first_name"],
+            last_name  = user["last_name"],
         )
 
     def close(self):

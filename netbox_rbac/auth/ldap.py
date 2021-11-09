@@ -39,9 +39,9 @@ class Session:
         # Each result is a tuple: (distinguishedName, attributes)
         attrs = result[1]
         props = {
-            "email": "mail",
+            "email":      "mail",
             "first_name": "givenName",
-            "last_name": "sn",
+            "last_name":  "sn",
         }
 
         # Map from LDAP attributes to account properties.
@@ -58,8 +58,7 @@ class Session:
 
     def lookup(self, kind, *args):
         results = self.client.search_s(
-            self.search[kind]["base"],
-            ldap.SCOPE_SUBTREE,
+            self.search[kind]["base"], ldap.SCOPE_SUBTREE,
             self.search[kind]["filter"] % tuple(args),
         )
 

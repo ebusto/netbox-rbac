@@ -1,5 +1,3 @@
-import pytest
-
 from netbox_rbac import macros
 
 from netbox_rbac.tests.types import *

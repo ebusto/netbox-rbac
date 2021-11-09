@@ -5,10 +5,11 @@ import logging
 import yaml
 
 from inspect import getmembers, isfunction
-from urllib import parse, request
+from urllib  import parse, request
 from wcmatch import fnmatch
 
 from . import macros, middleware
+
 
 try:
     from yaml import CLoader as Loader
@@ -84,12 +85,12 @@ class Rule:
 
 class Role:
     def __init__(self, name, **kwargs):
-        self.name = name
+        self.name    = name
         self.context = kwargs.get("context", {})
-        self.groups = kwargs.get("groups", [])
+        self.groups  = kwargs.get("groups",  [])
         self.imports = kwargs.get("imports", [])
-        self.perms = kwargs.get("perms", [])
-        self.rule = kwargs.get("rule")
+        self.perms   = kwargs.get("perms",   [])
+        self.rule    = kwargs.get("rule")
 
         if self.rule:
             self.code = compile(self.rule, "<string>", "eval")
@@ -108,9 +109,10 @@ class Role:
             for name, fn in functions:
                 context[name] = functools.partial(fn, obj)
 
-            context.update(
-                {"fnmatch": fnmatch.fnmatch, "request": middleware.request(),}
-            )
+            context.update({
+                "fnmatch": fnmatch.fnmatch,
+                "request": middleware.request(),
+            })
 
             return eval(self.code, context)
 

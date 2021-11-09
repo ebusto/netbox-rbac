@@ -1,8 +1,7 @@
-import pytest
-
 from netbox_rbac import rule
 
 from netbox_rbac.tests.types import *
+
 
 config = {
     # Grants all rack permissions when the rack is in DC1.
@@ -18,7 +17,7 @@ config = {
         "rule": 'obj.site.name == "DC2"',
     },
     # Grants all permissions to all sites.
-    "dcim_site_admin_all": {"groups": ["DCIM-Site-Admins"], "perms": ["dcim.*_site"],},
+    "dcim_site_admin_all": {"groups": ["DCIM-Site-Admins"], "perms": ["dcim.*_site"]},
     "import_test": {
         "groups": ["DCIM-Site-Admins"],
         "imports": ["os", "os.path"],

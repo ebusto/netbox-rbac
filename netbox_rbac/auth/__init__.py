@@ -2,7 +2,8 @@ import collections
 
 from . import ldap, mock
 
-Account = collections.namedtuple("Account", ["email", "first_name", "last_name",])
+
+Account = collections.namedtuple("Account", ["email", "first_name", "last_name"])
 
 
 def load(config):

@@ -3,56 +3,52 @@ import django.conf
 import importlib
 import inspect
 
-# Core applications.
-apps = [
-    "circuits",
-    "dcim",
-    "extras",
-    "ipam",
-    "tenancy",
-    "virtualization",
-]
-
-config = django.conf.settings.RBAC
-
-# Custom applications? Patch those too.
-if "APPS" in config:
-    apps += config["APPS"]
-
 
 class AppConfig(django.apps.AppConfig):
     name = "netbox_rbac"
 
     def ready(self):
-        from .mixins import PermissionRequiredMixin
+        # Patch the restricted queryset manager to remove view based restrictions.
+        import utilities.querysets
 
-        # For each view in each app, replace PermissionRequiredMixin with ours.
+        setattr(utilities.querysets.RestrictedQuerySet, "restrict", lambda qs, *args: qs)
+
+        # Patch views.
+        from .mixins import (
+            BulkDeleteView,
+            BulkEditView,
+            BulkRenameView,
+            ObjectDeleteView,
+            ObjectEditView,
+        )
+
+        replace = {
+            "BulkDeleteView":   BulkDeleteView,
+            "BulkEditView":     BulkEditView,
+            "BulkRenameView":   BulkRenameView,
+            "ObjectDeleteView": ObjectDeleteView,
+            "ObjectEditView":   ObjectEditView,
+        }
+
+        # Core applications.
+        apps = ["circuits", "dcim", "extras", "ipam", "tenancy", "virtualization"]
+        conf = django.conf.settings.RBAC
+
+        # Custom applications? Patch those too.
+        if "APPS" in conf:
+            apps += conf["APPS"]
+
+        # For each view in each app, replace various generic view classes.
         for app in apps:
             module = importlib.import_module("%s.views" % app)
 
-            for name, obj in inspect.getmembers(module, inspect.isclass):
+            for _, obj in inspect.getmembers(module, inspect.isclass):
                 if obj.__module__ == module.__name__:
                     bases = list(obj.__bases__)
 
                     for i, base in enumerate(bases):
-                        if base.__name__ == "PermissionRequiredMixin":
-                            bases[i] = PermissionRequiredMixin
+                        for name, view in replace.items():
+                            if name == base.__name__:
+                                bases[i] = view
 
                     obj.__bases__ = tuple(bases)
-
-        # Patch views which don't otherwise have an easy way to get objects.
-        import dcim.models
-        import dcim.views
-
-        patch = [
-            (dcim.views.VirtualChassisAddMemberView, dcim.models.VirtualChassis),
-            (dcim.views.VirtualChassisEditView, dcim.models.VirtualChassis),
-            (dcim.views.VirtualChassisRemoveMemberView, dcim.models.VirtualChassis),
-        ]
-
-        for view, model in patch:
-            setattr(
-                view,
-                "get_object",
-                lambda self, kwargs: model.objects.get(pk=kwargs["pk"]),
-            )
