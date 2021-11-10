@@ -14,20 +14,18 @@ class AppConfig(django.apps.AppConfig):
         setattr(utilities.querysets.RestrictedQuerySet, "restrict", lambda qs, *args: qs)
 
         # Patch views.
-        from .mixins import (
-            BulkDeleteView,
-            BulkEditView,
-            BulkRenameView,
-            ObjectDeleteView,
-            ObjectEditView,
-        )
+        import dcim.views
+        import netbox.views
 
-        replace = {
-            "BulkDeleteView":   BulkDeleteView,
-            "BulkEditView":     BulkEditView,
-            "BulkRenameView":   BulkRenameView,
-            "ObjectDeleteView": ObjectDeleteView,
-            "ObjectEditView":   ObjectEditView,
+        from . import mixins
+
+        include = {
+            dcim.views.BulkDisconnectView:         mixins.BulkCheckView,
+            netbox.views.generic.BulkDeleteView:   mixins.BulkCheckView,
+            netbox.views.generic.BulkEditView:     mixins.BulkCheckView,
+            netbox.views.generic.BulkRenameView:   mixins.BulkCheckView,
+            netbox.views.generic.ObjectDeleteView: mixins.ObjectCheckView,
+            netbox.views.generic.ObjectEditView:   mixins.ObjectCheckView,
         }
 
         # Core applications.
@@ -38,17 +36,21 @@ class AppConfig(django.apps.AppConfig):
         if "APPS" in conf:
             apps += conf["APPS"]
 
-        # For each view in each app, replace various generic view classes.
+        # For each view in each app, include the appropriate RBAC check.
         for app in apps:
             module = importlib.import_module("%s.views" % app)
 
             for _, obj in inspect.getmembers(module, inspect.isclass):
-                if obj.__module__ == module.__name__:
-                    bases = list(obj.__bases__)
+                if obj.__module__ != module.__name__:
+                    continue
 
-                    for i, base in enumerate(bases):
-                        for name, view in replace.items():
-                            if name == base.__name__:
-                                bases[i] = view
+                bases = list(obj.__bases__)
 
-                    obj.__bases__ = tuple(bases)
+                for i, base in enumerate(bases):
+                    view = include.get(base)
+
+                    if view:
+                        bases.insert(i, view)
+                        break
+
+                obj.__bases__ = tuple(bases)
